@@ -1,63 +1,56 @@
-# 🐾 SIMPATINHAS — Sistema Integrado de Monitoramento e Proteção Animal
+# SIMPATINHAS: Sistema Integrado de Monitoramento e Proteção Animal
 
-> **MVP Web** projetado para mitigar a problemática do abandono de animais na Paraíba e prover dados estruturados ao Centro de Controle de Zoonoses (CCZ).
+MVP Web desenvolvido para auxiliar no controle do abandono de animais na Paraíba, fornecendo dados estruturados para o Centro de Controle de Zoonoses (CCZ).
 
----
+## Sobre o Projeto
 
-## 📋 Sobre o Projeto
+O sistema integra a população e o poder público através de dois perfis de uso:
 
-O SIMPATINHAS é um sistema de monitoramento focado na integração de dois perfis de usuários:
-1. **População (Cidadão)**: Pode cadastrar alertas/denúncias georreferenciadas ou de endereço sobre abandono/maus-tratos e visualizar a galeria de animais disponíveis para adoção, sabendo previamente o prontuário de saúde.
-2. **Agentes do CCZ (Admin)**: Acessam o painel estatístico consolidado (total de resgates, índices de castração, e controle de zoonoses) e efetuam a triagem clínica (registro do peso, testes rápidos e controle de status do animal).
+* População: Permite o cadastro de alertas georreferenciados sobre animais em risco, abandono ou maus-tratos. Também exibe a lista de animais disponíveis para adoção com seus respectivos prontuários de saúde.
+* Agentes do CCZ: Fornece acesso a um painel administrativo com estatísticas de resgate, castração e controle de zoonoses, além de ferramentas para registro de triagem clínica.
 
----
+## Como Rodar Localmente
 
-## 🚀 Como Rodar Localmente
+O frontend foi desenvolvido em JavaScript Vanilla (ES Modules). Para evitar problemas de CORS no navegador durante a execução local, é necessário rodar um servidor HTTP.
 
-O projeto foi construído usando **JavaScript Vanilla (ES Modules)**, o que exige um servidor HTTP local para contornar políticas de CORS do navegador.
+### 1. Iniciar o servidor
 
-### Passo 1: Iniciar Servidor Local
-Navegue até a pasta do projeto e inicie o servidor:
+Na pasta raiz do projeto, execute o comando abaixo no terminal:
 
 ```bash
-# Utilizando o utilitário nativo npm
 npx -y serve .
+
 ```
 
-O projeto estará disponível no endereço: **http://localhost:3000**
+O sistema ficará disponível no endereço http://localhost:3000.
 
-### Passo 2: Credenciais de Acesso (Mock)
-- **Perfil Cidadão**: `maria@email.com` / `maria123`
-- **Agente CCZ (Admin)**: `agente@ccz.pb.gov.br` / `admin123`
+### 2. Credenciais de teste
 
-*Dica: Na tela de login, basta clicar na caixa de demonstração inferior para preencher as credenciais de teste.*
+* Cidadão: maria@email.com / maria123
+* Agente CCZ: agente@ccz.pb.gov.br / admin123
 
----
+Na tela de login, há uma funcionalidade de preenchimento automático para facilitar o acesso aos dados de demonstração.
 
-## 🏛️ Padrões de Projeto Utilizados (Explicação Acadêmica)
+## Padrões de Projeto Aplicados
 
-Para a apresentação teórica de Padrões de Projeto (GoF), o código foi limpo e refatorado em duas estruturas fundamentais de banco de dados e persistência:
+A arquitetura do MVP foi estruturada para avaliação na disciplina de Padrões de Projeto (GoF), com foco na separação de responsabilidades e controle de estado no frontend.
 
 ### 1. Singleton (Criacional)
-**Classe Relacionada**: [Database.js](file:///C:/Users/Micro/.gemini/antigravity-ide/scratch/simpatinhas/js/models/Database.js)
 
-O Singleton garante que o banco de dados local (gerenciado no `localStorage` do navegador) tenha **apenas uma única instância ativa** em toda a aplicação. 
+O padrão Singleton foi aplicado na classe Database.js para garantir que o gerenciamento do localStorage possua um ponto único de acesso. Isso evita múltiplas instâncias concorrentes manipulando o estado da aplicação simultaneamente.
 
 ```javascript
 // js/models/Database.js
 
 export class Database {
-  // Atributo estático privado para guardar a instância na memória.
   static _instancia = null;
 
   constructor() {
-    // PROTEÇÃO: Impede a instanciação com 'new Database()' caso já exista uma ativa.
     if (Database._instancia) {
       throw new Error("Use Database.getInstancia()");
     }
   }
 
-  // PONTO DE ACESSO GLOBAL
   static getInstancia() {
     if (!Database._instancia) {
       Database._instancia = new Database();
@@ -65,21 +58,18 @@ export class Database {
     return Database._instancia;
   }
 }
+
 ```
 
-### 2. Repository Pattern (Estrutural / Acesso a Dados)
-**Classes Relacionadas**: [AnimalRepository.js](file:///C:/Users/Micro/.gemini/antigravity-ide/scratch/simpatinhas/js/repositories/AnimalRepository.js), [DenunciaRepository.js](file:///C:/Users/Micro/.gemini/antigravity-ide/scratch/simpatinhas/js/repositories/DenunciaRepository.js)
+### 2. Repository Pattern (Estrutural)
 
-O Repository Pattern é utilizado para **abstrair e encapsular o acesso às tabelas** de Animais e Denúncias. 
-
-Em vez de colocar código de banco de dados (`localStorage.setItem`, `JSON.parse`) dentro das views ou nos controladores, criamos métodos semânticos e orientados a coleções:
+Aplicado nas classes AnimalRepository.js e DenunciaRepository.js. O padrão isola a lógica de persistência e acesso aos dados (neste escopo, o localStorage) do restante da aplicação.
 
 ```javascript
 // js/repositories/AnimalRepository.js
 
 export class AnimalRepository {
   constructor() {
-    // Obtém o ponto de acesso único através do Singleton
     this.db = Database.getInstancia();
     this.nomeTabela = "animais";
   }
@@ -94,17 +84,15 @@ export class AnimalRepository {
     this.db.salvarTabela(this.nomeTabela, lista);
   }
 }
+
 ```
 
-**Por que o Repository é útil acadêmica e profissionalmente?**
-Se no futuro o sistema migrar do `localStorage` para um banco real como Supabase, Postgres ou MySQL, **apenas as classes de Repository serão modificadas**. Todo o restante da aplicação (Views e Controllers) não sofrerá nenhuma linha de alteração.
+O uso do Repository garante que, em um cenário de escalabilidade onde o armazenamento local seja substituído por um banco de dados real em nuvem, as modificações fiquem restritas a essas classes, sem impacto nas Views ou Controllers.
 
----
+## Arquitetura MVC
 
-## 📂 Arquitetura MVC Simplificada
+A organização do código fonte segue o padrão arquitetural MVC:
 
-A divisão de responsabilidades da aplicação segue a estrutura padrão MVC:
-
-- **Model**: `Database.js` encapsula os dados e a lógica de armazenamento. Os `Repositories` atuam como intermediários da persistência.
-- **View**: As classes dentro da pasta `views/` geram o template de HTML, monitoram eventos de tela dos usuários e apresentam feedback visual.
-- **Controller**: Tratam a validação das regras de negócio e acionam os `Repositories` adequados para leitura ou escrita.
+* Model: Representado pelo Database.js e Repositories, responsáveis pela estrutura e persistência dos dados.
+* View: Classes encarregadas da renderização do DOM, captura de eventos dos usuários e feedback visual na interface.
+* Controller: Camada intermediária que processa as ações enviadas pela View, valida regras de negócio e requisita operações aos Repositories.
