@@ -1,0 +1,97 @@
+/* ============================================================================
+   SIMPATINHAS — Design Tokens (Identidade Governamental / B2G)
+   ============================================================================ */
+
+:root {
+  /* ── Cores Governamentais Sóbras ── */
+  /* Roxo institucional (mais fechado, menos vibrante) */
+  --purple: #6366F1;
+  --purple-hover: #4F46E5;
+  --purple-dark: #3730A3;
+  --purple-light: #EEF2FF;
+  --purple-bg: #F5F7FF;
+
+  /* Verde-limão corporativo (usado estritamente como destaque, status ou acentos) */
+  --lime: #84CC16;
+  --lime-hover: #65A30D;
+  --lime-light: #ECFDF5;
+  --lime-bg: #F0FDF4;
+
+  /* Neutros frios padrão B2B */
+  --bg: #F8FAFC;
+  --bg-alt: #F1F5F9;
+  --surface: #FFFFFF;
+  --surface-hover: #F8FAFC;
+  --border: #CBD5E1;
+  --border-light: #E2E8F0;
+
+  /* Textos de alta legibilidade */
+  --text: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+
+  /* Cores Semânticas Padrão */
+  --success: #15803D;
+  --success-light: #DCFCE7;
+  --warning: #B45309;
+  --warning-light: #FEF3C7;
+  --danger: #B91C1C;
+  --danger-light: #FEE2E2;
+  --info: #0369A1;
+  --info-light: #E0F2FE;
+
+  /* ── Tipografia Corporativa ── */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ── Espaçamentos Sóbrios ── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* ── Bordas Mais Retas (Visual Sério/CCZ) ── */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 4px;
+  --radius-full: 9999px;
+
+  /* ── Sombras Sutis (Removendo efeito flutuante de IA) ── */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --shadow-purple: none;
+  --shadow-lime: none;
+
+  /* ── Transições Rápidas ── */
+  --transition-fast: 100ms ease;
+  --transition-base: 180ms ease;
+
+  /* ── Layout ── */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --max-content: 1200px;
+}
