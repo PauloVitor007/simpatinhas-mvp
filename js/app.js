@@ -71,14 +71,14 @@ class App {
     }, { public: true });
 
     // Home Cidadão
-    this.router.register("home", () => {
-      this._renderizarLayoutBase("cidadao");
+    this.router.register("home", async () => {
+      await this._renderizarLayoutBase("cidadao");
       this.cidadaoHomeView.render(nav);
     }, { requireAuth: true });
 
     // Enviar Denúncia
-    this.router.register("denuncia", () => {
-      this._renderizarLayoutBase("cidadao");
+    this.router.register("denuncia", async () => {
+      await this._renderizarLayoutBase("cidadao");
       const usuarioLogado = this.authCtrl.obterUsuarioLogado();
       this.denunciaFormView.render(
         (dados) => this.denunciaCtrl.registrarDenuncia(dados),
@@ -88,20 +88,20 @@ class App {
     }, { requireAuth: true });
 
     // Galeria de Adoção
-    this.router.register("adocao", () => {
-      this._renderizarLayoutBase("cidadao");
+    this.router.register("adocao", async () => {
+      await this._renderizarLayoutBase("cidadao");
       this.galeriaAdocaoView.render(nav);
     }, { requireAuth: true });
 
     // Dashboard Admin CCZ
-    this.router.register("admin", () => {
-      this._renderizarLayoutBase("admin");
-      this.adminDashboardView.render(nav);
+    this.router.register("admin", async () => {
+      await this._renderizarLayoutBase("admin");
+      await this.adminDashboardView.render(nav);
     }, { requireAuth: true, requireAdmin: true });
 
     // Triagem Clínica
-    this.router.register("triagem", () => {
-      this._renderizarLayoutBase("admin");
+    this.router.register("triagem", async () => {
+      await this._renderizarLayoutBase("admin");
       this.triagemView.render(nav);
     }, { requireAuth: true, requireAdmin: true });
   }
@@ -132,13 +132,13 @@ class App {
   /**
    * Renderiza a moldura do sistema (Header, Sidebar e containers principais).
    */
-  _renderizarLayoutBase(tipoLayout) {
+  async _renderizarLayoutBase(tipoLayout) {
     const appContainer = document.getElementById("app");
     const usuario = this.authCtrl.obterUsuarioLogado();
     const iniciais = this.authCtrl.obterIniciais();
     const nav = (caminho) => this.router.navigate(caminho);
     const rotaAtiva = this.router.getCurrentRoute();
-    const quantidadePendentes = this.denunciaCtrl.obterQuantidadePendentes();
+    const quantidadePendentes = await this.denunciaCtrl.obterQuantidadePendentes();
 
     if (tipoLayout === "admin") {
       appContainer.innerHTML = `

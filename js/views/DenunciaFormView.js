@@ -156,19 +156,24 @@ export class DenunciaFormView {
           nextBtn.classList.add("loading");
           nextBtn.disabled = true;
 
-          const resultado = onSubmit({
+          onSubmit({
             ...this.formData,
             id_usuario: currentUser?.id || null
-          });
-
-          if (resultado.success) {
-            showToast("Denúncia cadastrada com sucesso.", "success");
-            navigate("home");
-          } else {
-            showToast(resultado.error, "error");
+          }).then((resultado) => {
+            if (resultado.success) {
+              showToast("Denúncia cadastrada com sucesso.", "success");
+              navigate("home");
+            } else {
+              showToast(resultado.error, "error");
+              nextBtn.classList.remove("loading");
+              nextBtn.disabled = false;
+            }
+          }).catch(err => {
+            console.error(err);
+            showToast("Erro ao processar denúncia.", "error");
             nextBtn.classList.remove("loading");
             nextBtn.disabled = false;
-          }
+          });
         }
       }
     });

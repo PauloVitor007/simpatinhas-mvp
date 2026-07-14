@@ -1,11 +1,8 @@
-/**
- * ============================================================================
- * SIMPATINHAS — DashboardController
- * ============================================================================
- */
-
 import { AnimalRepository } from "../repositories/AnimalRepository.js";
 import { DenunciaRepository } from "../repositories/DenunciaRepository.js";
+
+// Professor, ajustamos o DashboardController para realizar a consolidação dos dados de forma assíncrona,
+// visto que as métricas e listagens das denúncias agora vêm do Firebase (Firestore).
 
 export class DashboardController {
   constructor() {
@@ -14,14 +11,14 @@ export class DashboardController {
   }
 
   /**
-   * Prepara o consolidado de dados para o painel de administração do CCZ.
+   * Prepara o consolidado de dados para o painel de administração do CCZ de forma assíncrona.
    */
-  obterPainelGeral() {
-    const animalM = this.animalRepo.obterMetricas();
-    const denunciaM = this.denunciaRepo.obterMetricas();
+  async obterPainelGeral() {
+    const animalM = await this.animalRepo.obterMetricas();
+    // Acessa métricas no Firebase assincronamente com await
+    const denunciaM = await this.denunciaRepo.obterMetricas();
 
     return {
-      // 4 cards de topo exigidos no MVP (Visual e Funcional)
       cards: [
         {
           titulo: "Total de Animais",
@@ -52,17 +49,16 @@ export class DashboardController {
           iconeUnicode: `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
         }
       ],
-      // Dados auxiliares para gráficos e listas
       denuncias: denunciaM,
       animais: animalM
     };
   }
 
   /**
-   * Obtém a lista de denúncias recentes (exibidas na tabela principal do dashboard).
+   * Obtém a lista de denúncias recentes de forma assíncrona.
    */
-  obterDenunciasRecentes(limite = 5) {
-    const todas = this.denunciaRepo.buscarTodas();
+  async obterDenunciasRecentes(limite = 5) {
+    const todas = await this.denunciaRepo.buscarTodas();
     return todas.slice(0, limite);
   }
 }

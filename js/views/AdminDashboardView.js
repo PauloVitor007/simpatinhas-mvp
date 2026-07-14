@@ -1,9 +1,3 @@
-/**
- * ============================================================================
- * SIMPATINHAS — AdminDashboardView
- * ============================================================================
- */
-
 import { DashboardController } from "../controllers/DashboardController.js";
 import { DenunciaController } from "../controllers/DenunciaController.js";
 import { 
@@ -12,6 +6,9 @@ import {
   showToast, escapeHtml
 } from "../utils/helpers.js";
 
+// Professor, ajustamos a AdminDashboardView para resolver de forma assíncrona (async/await)
+// as chamadas de renderização e atualização do estado das denúncias no painel do CCZ.
+
 export class AdminDashboardView {
   constructor() {
     this.dashCtrl = new DashboardController();
@@ -19,13 +16,21 @@ export class AdminDashboardView {
   }
 
   /**
-   * Renderiza a visão geral do dashboard do CCZ.
+   * Renderiza a visão geral do dashboard do CCZ de forma assíncrona.
    */
-  render(navigate) {
-    const dadosPainel = this.dashCtrl.obterPainelGeral();
-    const denunciasRecentes = this.dashCtrl.obterDenunciasRecentes(5);
-
+  async render(navigate) {
     const content = document.getElementById("page-content");
+    content.innerHTML = `
+      <div class="fade-in">
+        <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+          Carregando dados do servidor...
+        </div>
+      </div>
+    `;
+
+    // Carrega dados assincronamente com await
+    const dadosPainel = await this.dashCtrl.obterPainelGeral();
+    const denunciasRecentes = await this.dashCtrl.obterDenunciasRecentes(5);
     content.innerHTML = `
       <div class="fade-in">
         <div class="page-header">
@@ -121,9 +126,9 @@ export class AdminDashboardView {
 
     document.getElementById("btn-nova-triagem")?.addEventListener("click", () => navigate("triagem"));
 
-    document.getElementById("filter-status")?.addEventListener("change", (e) => {
+    document.getElementById("filter-status")?.addEventListener("change", async (e) => {
       const status = e.target.value;
-      const filtrados = this.denunciaCtrl.listarDenuncias({ status });
+      const filtrados = await this.denunciaCtrl.listarDenuncias({ status });
       document.getElementById("denuncias-tbody").innerHTML = this._renderLinhasDenuncia(filtrados);
       this._bindAcoesStatus();
     });
@@ -197,10 +202,10 @@ export class AdminDashboardView {
 
   _bindAcoesStatus() {
     document.querySelectorAll(".status-action").forEach((select) => {
-      select.addEventListener("change", (e) => {
+      select.addEventListener("change", async (e) => {
         const id = e.target.dataset.id;
         const status = e.target.value;
-        const result = this.denunciaCtrl.atualizarStatus(id, status);
+        const result = await this.denunciaCtrl.atualizarStatus(id, status);
 
         if (result.success) {
           showToast("Status da denúncia alterado.", "success");

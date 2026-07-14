@@ -17,12 +17,20 @@ export class TriagemView {
   }
 
   /**
-   * Renderiza a tela de Triagem Clínica dos Animais.
+   * Renderiza a tela de Triagem Clínica dos Animais de forma assíncrona.
    */
-  render(navigate) {
-    const animais = this.animalCtrl.listarTodos();
-
+  async render(navigate) {
     const content = document.getElementById("page-content");
+    content.innerHTML = `
+      <div class="fade-in">
+        <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+          Carregando dados do servidor...
+        </div>
+      </div>
+    `;
+
+    const animais = await this.animalCtrl.listarTodos();
+
     content.innerHTML = `
       <div class="fade-in">
         <div class="page-header">
@@ -200,7 +208,7 @@ export class TriagemView {
     const form = document.getElementById("triagem-form");
     const btnLimpar = document.getElementById("btn-limpar");
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const dados = {
@@ -225,9 +233,9 @@ export class TriagemView {
 
       if (this.animalEmEdicaoId) {
         // Atualiza animal existente
-        const resultado = this.animalCtrl.atualizarDadosClinicos(this.animalEmEdicaoId, dados);
+        const resultado = await this.animalCtrl.atualizarDadosClinicos(this.animalEmEdicaoId, dados);
         // Atualiza também os dados não clínicos diretamente
-        this.animalCtrl.animalRepo.atualizar(this.animalEmEdicaoId, {
+        await this.animalCtrl.animalRepo.atualizar(this.animalEmEdicaoId, {
           nome: dados.nome,
           especie: dados.especie,
           raca: dados.raca,
@@ -246,7 +254,7 @@ export class TriagemView {
         }
       } else {
         // Cadastra novo animal
-        const resultado = this.animalCtrl.cadastrarAnimal(dados);
+        const resultado = await this.animalCtrl.cadastrarAnimal(dados);
         if (resultado.success) {
           showToast("Animal cadastrado no CCZ.", "success");
           this.render(navigate);
@@ -267,9 +275,9 @@ export class TriagemView {
 
   _bindBusca() {
     const input = document.getElementById("animal-busca");
-    input?.addEventListener("input", (e) => {
+    input?.addEventListener("input", async (e) => {
       const termo = e.target.value.trim();
-      const animais = termo ? this.animalCtrl.buscar(termo) : this.animalCtrl.listarTodos();
+      const animais = termo ? await this.animalCtrl.buscar(termo) : await this.animalCtrl.listarTodos();
       document.getElementById("animals-list").innerHTML = this._renderListaAnimais(animais);
       this._bindAcaoSelecaoItem();
     });
@@ -277,9 +285,9 @@ export class TriagemView {
 
   _bindAcaoSelecaoItem() {
     document.querySelectorAll(".animal-list-item").forEach((item) => {
-      item.addEventListener("click", () => {
+      item.addEventListener("click", async () => {
         const id = item.dataset.id;
-        const animal = this.animalCtrl.buscarPorId(id);
+        const animal = await this.animalCtrl.buscarPorId(id);
         if (!animal) return;
 
         this.animalEmEdicaoId = id;
