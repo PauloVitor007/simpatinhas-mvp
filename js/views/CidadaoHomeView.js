@@ -15,12 +15,14 @@ export class CidadaoHomeView {
   /**
    * Renderiza a página inicial do perfil cidadão.
    */
-  render(navigate) {
-    const animais = this.animalCtrl.listarParaAdocao();
-    const metricas = this.animalCtrl.obterMetricas();
+  async render(navigate) {
+    const content = document.getElementById("page-content");
+    content.innerHTML = '<div class="fade-in"><div style="padding: 3rem; text-align: center; color: var(--text-muted);">Carregando dados da nuvem...</div></div>';
+
+    const animais = await this.animalCtrl.listarParaAdocao();
+    const metricas = await this.animalCtrl.obterMetricas();
     const animaisDestaque = animais.slice(0, 3);
 
-    const content = document.getElementById("page-content");
     content.innerHTML = `
       <div class="fade-in">
         <!-- Banner Principal -->
@@ -124,7 +126,7 @@ export class CidadaoHomeView {
         </div>
         <div class="animal-card-footer">
           <span class="badge ${statusAnimalBadgeClass(animal.status_atual)}">${statusAnimalLabel(animal.status_atual)}</span>
-          <button class="btn btn-ghost btn-sm">Visualizar</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('btn-adotar').click()">Visualizar</button>
         </div>
       </div>
     `;

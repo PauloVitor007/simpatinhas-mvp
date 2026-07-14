@@ -7,7 +7,7 @@
 import { AnimalController } from "../controllers/AnimalController.js";
 import { 
   statusAnimalLabel, statusAnimalBadgeClass, 
-  porteLabel, especieLabel, escapeHtml 
+  porteLabel, especieLabel, escapeHtml, showToast
 } from "../utils/helpers.js";
 
 export class GaleriaAdocaoView {
@@ -19,8 +19,12 @@ export class GaleriaAdocaoView {
   /**
    * Renderiza a galeria de adoções.
    */
-  render(navigate) {
+  async render(navigate) {
     const content = document.getElementById("page-content");
+    content.innerHTML = '<div class="fade-in"><div style="padding: 3rem; text-align: center; color: var(--text-muted);">Carregando dados da nuvem...</div></div>';
+
+    const htmlAnimais = await this._renderAnimais();
+
     content.innerHTML = `
       <div class="fade-in">
         <div class="page-header">
@@ -47,7 +51,7 @@ export class GaleriaAdocaoView {
 
         <!-- Grid de Animais -->
         <div class="grid grid-3" id="animais-grid">
-          ${this._renderAnimais()}
+          ${htmlAnimais}
         </div>
       </div>
 
@@ -60,8 +64,8 @@ export class GaleriaAdocaoView {
     this._bindAcoesCards();
   }
 
-  _renderAnimais() {
-    const lista = this.animalCtrl.listarParaAdocao(this.filtroAtual);
+  async _renderAnimais() {
+    const lista = await this.animalCtrl.listarParaAdocao(this.filtroAtual);
 
     if (lista.length === 0) {
       return `
@@ -101,7 +105,7 @@ export class GaleriaAdocaoView {
 
   _bindFiltros() {
     const areaFiltros = document.getElementById("galeria-filters");
-    areaFiltros.addEventListener("click", (e) => {
+    areaFiltros.addEventListener("click", async (e) => {
       const chip = e.target.closest(".filter-chip");
       if (!chip) return;
 
@@ -117,26 +121,27 @@ export class GaleriaAdocaoView {
       this.filtroAtual[tipo] = valor;
 
       // Renderiza novamente a galeria
-      document.getElementById("animais-grid").innerHTML = this._renderAnimais();
+      document.getElementById("animais-grid").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted);">Filtrando...</div>';
+      document.getElementById("animais-grid").innerHTML = await this._renderAnimais();
       this._bindAcoesCards();
     });
   }
 
   _bindAcoesCards() {
     document.querySelectorAll(".animal-card, .btn-detalhes").forEach((item) => {
-      item.addEventListener("click", (e) => {
+      item.addEventListener("click", async (e) => {
         // Evita abrir modal duas vezes pelo clique no botão e no card simultaneamente
         e.stopPropagation();
         
         const card = e.target.closest(".animal-card");
         const id = card?.dataset.id || e.target.dataset.id;
-        if (id) this._exibirFichaAnimal(id);
+        if (id) await this._exibirFichaAnimal(id);
       });
     });
   }
 
-  _exibirFichaAnimal(id) {
-    const animal = this.animalCtrl.buscarPorId(id);
+  async _exibirFichaAnimal(id) {
+    const animal = await this.animalCtrl.buscarPorId(id);
     if (!animal) return;
 
     const modalContainer = document.getElementById("animal-modal-container");
